@@ -4,6 +4,8 @@
 int move_R(int dial, int num);
 int move_L(int dial, int num);
 
+#define MAX_ROTATION 100
+
 int main() {
   FILE *file_ptr;
 
@@ -16,7 +18,8 @@ int main() {
 
   char line[256];
   int dial = 50;
-  int pwd = 0;
+  int pwd_p1 = 0;
+  int pwd_p2 = 0;
 
   while (fgets(line, sizeof(line), file_ptr) != NULL) {
     int num = atoi(line + 1);
@@ -26,25 +29,36 @@ int main() {
     }
     switch (line[0]) {
     case 'L':
-      dial = (dial - num) % 100;
-      if (dial < 0) {
-        dial = 100 - abs(dial);
+      for (register int i = 0; i < num; i++) {
+        dial--;
+        if (dial < 0) {
+          dial = 99;
+        } else if (dial == 0) {
+          pwd_p2++;
+        }
       }
 
       if (dial == 0)
-        pwd++;
+        pwd_p1++;
       break;
     case 'R':
-      dial = (dial + num) % 100;
+      for (register int i = 0; i < num; i++) {
+        dial++;
+        if (dial > 99) {
+          dial = 0;
+          pwd_p2++;
+        }
+      }
 
       if (dial == 0)
-        pwd++;
+        pwd_p1++;
       break;
     default:
       printf("what? %c\n", line[0]);
       exit(1);
     }
   }
-  printf("Password is %i\n", pwd);
+  printf("Password 1 is %i\n", pwd_p1);
+  printf("Password 2 is %i\n", pwd_p2);
   fclose(file_ptr);
 }
